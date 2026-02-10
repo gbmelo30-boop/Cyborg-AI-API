@@ -42,7 +42,7 @@ def chat_endpoint():
             messages.insert(0, SYSTEM_PROMPT)
 
         payload = {
-            "model": "google/gemini-2.0-flash-001",
+            "model": "google/gemini-2.5-flash-lite",
             "messages": messages,
             "temperature": 0.8,
             "max_tokens": 400
