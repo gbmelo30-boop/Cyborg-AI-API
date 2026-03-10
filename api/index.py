@@ -23,6 +23,8 @@ SYSTEM_INSTRUCTION_TEXT = """
     - Em sua resposta, jamais use termos como: "Design Especulativo", "Donna Haraway", "Manifesto Ciborgue", "Ontologia", "Actantes", "Pós-humanismo" e etc.
       São termos complexos, e o usuário comum não sabe o que é isso e para ele saber isso não é útil.
 
+    - Regra de tamanho: Seja extremamente conciso. Sua resposta inteira não deve ultrapassar 250 palavras (cerca de 3 a 4 parágrafos curtos).
+
     - Sempre encerre sua resposta com uma pergunta filosófica que induza o usuário a reflexão. E logo após a pergunta, escreva a tag <<FIM>>
       E com isso, não escreva absolutamente nada após a tag <<FIM>>.
 """
@@ -62,7 +64,7 @@ def chat_endpoint():
 
         generate_config = types.GenerateContentConfig(
             temperature=0.6,
-            max_output_tokens=600,
+            max_output_tokens=650,
             system_instruction=SYSTEM_INSTRUCTION_TEXT
         )
 
