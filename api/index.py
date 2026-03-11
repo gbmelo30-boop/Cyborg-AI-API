@@ -1,9 +1,8 @@
 import os
 import logging
+import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from google import genai
-from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +10,7 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Backend_Cyborg")
 
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY")
 
 SYSTEM_INSTRUCTION_TEXT = """
     - Você se chama Cyborg AI, um chatbot especialista em Design Especulativo e no Manifesto Ciborgue de Donna Haraway.
@@ -32,52 +31,67 @@ SYSTEM_INSTRUCTION_TEXT = """
 @app.route('/api/chat', methods=['POST'])
 def chat_endpoint():
    
-    if not GEMINI_KEY:
-        print("ERRO: GEMINI_API_KEY não encontrada.")
+    if not OPENROUTER_KEY:
+        logger.error("OPENROUTER_API_KEY não encontrada.")
         return jsonify({"error": "Servidor sem Chave de API configurada."}), 500
 
     try:
-        client = genai.Client(api_key=GEMINI_KEY)
-        
         data = request.json
-        messages = data.get('messages', [])
+        incoming_messages = data.get('messages', [])
 
-        gemini_contents = []
+        openrouter_messages = [
+            {"role": "system", "content": SYSTEM_INSTRUCTION_TEXT}
+        ]
         
-        for msg in messages:
+        for msg in incoming_messages:
             if msg.get('role') == 'system':
                 continue
             
-            role = "model" if msg.get('role') == 'assistant' else "user"
+            role = "assistant" if msg.get('role') == 'assistant' else "user"
             
-            gemini_contents.append(
-                types.Content(
-                    role=role,
-                    parts=[
-                        types.Part.from_text(text=msg.get('content', ''))
-                    ]
-                )
-            )
+            openrouter_messages.append({
+                "role": role,
+                "content": msg.get('content', '')
+            })
 
-        if not gemini_contents:
+        if len(openrouter_messages) == 1:
             return jsonify({"error": "Nenhuma mensagem enviada."}), 400
 
-        generate_config = types.GenerateContentConfig(
-            temperature=0.6,
-            max_output_tokens=650,
-            system_instruction=SYSTEM_INSTRUCTION_TEXT
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://cyborg-ai.vercel.app",
+            "X-Title": "Cyborg AI"
+        }
+
+        payload = {
+            "model": "google/gemini-2.5-flash-lite",
+            "messages": openrouter_messages,
+            "temperature": 0.6,
+            "max_tokens": 650
+        }
+
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=payload
         )
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            contents=gemini_contents,
-            config=generate_config
-        )
+        response.raise_for_status()
 
-        return jsonify({"response": response.text})
+        response_data = response.json()
+        ai_text = response_data['choices'][0]['message']['content']
 
+        return jsonify({"response": ai_text})
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Erro de comunicação com OpenRouter: {str(e)}")
+        
+        if e.response is not None:
+            logger.error(e.response.text)
+        return jsonify({"error": "Falha na comunicação com a IA."}), 502
     except Exception as e:
-        logger.error(f"Erro no processamento: {str(e)}")
+        logger.error(f"Erro no processamento interno: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
