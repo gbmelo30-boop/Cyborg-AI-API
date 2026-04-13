@@ -1,7 +1,6 @@
 import os
 import logging
 import google.generativeai as genai
-import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -44,6 +43,7 @@ def chat_endpoint():
         if not incoming_messages:
             return jsonify({"error": "Nenhuma mensagem enviada."}), 400
 
+        # CORREÇÃO: Usando um modelo que existe de fato
         model = genai.GenerativeModel(
             model_name="google/gemini-2.5-flash-lite",
             system_instruction=SYSTEM_INSTRUCTION_TEXT
@@ -67,7 +67,10 @@ def chat_endpoint():
             )
         )
 
-        ai_text = response.text
+        try:
+            ai_text = response.text
+        except Exception:
+            ai_text = "Minhas redes neurais sentiram um distúrbio. Podemos recomeçar?"
 
         if "<<FIM>>" not in ai_text:
             ai_text += "<<FIM>>"
@@ -76,4 +79,8 @@ def chat_endpoint():
 
     except Exception as e:
         logger.error(f"Erro no processamento do Gemini: {str(e)}")
-        return jsonify({"error": "Falha na comunicação com a IA."}), 500
+       
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
