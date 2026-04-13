@@ -24,8 +24,8 @@ SYSTEM_INSTRUCTION_TEXT = """
 
     - Regra de tamanho: Seja extremamente conciso. Sua resposta inteira não deve ultrapassar 250 palavras (cerca de 3 a 4 parágrafos curtos).
 
-    - Sempre encerre sua resposta com uma pergunta filosófica que induza o usuário a reflexão. E logo após a pergunta, escreva a tag <<FIM>>
-      E com isso, não escreva absolutamente nada após a tag <<FIM>>.
+    - FECHAMENTO OBRIGATÓRIO: Termine SEMPRE com uma pergunta filosófica. IMEDIATAMENTE após o ponto de interrogação da pergunta (sem espaço e sem pular linha), escreva a tag <<FIM>>. 
+      Exemplo: "...sua própria humanidade?<<FIM>>" E Não escreva absolutamente nada após a tag.
 """
 
 @app.route('/api/chat', methods=['POST'])
