@@ -43,9 +43,8 @@ def chat_endpoint():
         if not incoming_messages:
             return jsonify({"error": "Nenhuma mensagem enviada."}), 400
 
-        # CORREÇÃO: Usando um modelo que existe de fato
         model = genai.GenerativeModel(
-            model_name="google/gemini-2.5-flash-lite",
+            model_name="gemini-2.5-flash-lite",
             system_instruction=SYSTEM_INSTRUCTION_TEXT
         )
 
@@ -79,7 +78,7 @@ def chat_endpoint():
 
     except Exception as e:
         logger.error(f"Erro no processamento do Gemini: {str(e)}")
-       
+        
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 if __name__ == '__main__':
