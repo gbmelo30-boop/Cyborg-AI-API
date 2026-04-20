@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyborg AI</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <section id="view-intro" class="view-container active-view">
+        <div id="theme-switcher" title="Alterar Tema">
+            <div class="theme-box">
+                <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06z"/></svg>
+                <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.02 21.49 7.74 22 9.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
+            </div>
+        </div>
+        <main>
+            <div class="led-ring"></div>
+            <h1>CYBORG AI</h1>
+            <p class="p-main">Uma jornada pela fronteira entre humano e máquina.</p>
+            <div class="loader-button-container">
+                <div id="loading-sequence">
+                    <div class="loading-bar-container"><div class="loading-bar-progress"></div></div>
+                    <p class="loading-text">INICIALIZANDO SISTEMA...</p>
+                </div>
+                <button type="button" id="start-button" onclick="irParaLogin(event)">INICIAR INTERAÇÃO</button>
+            </div>
+        </main>
+    </section>
+
+    <section id="view-auth" class="hidden-view">
+        <div class="top-right-controls">
+            <div class="control-btn" id="back-button" title="Voltar" onclick="voltarParaIntro()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </div>
+            <div class="control-btn" id="auth-theme-switcher" title="Alterar Tema" onclick="alternarTemaGlobal()">
+                <div style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                    <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06z"/></svg>
+                    <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.02 21.49 7.74 22 9.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="login-card">
+            <div class="login-form-panel">
+                <div id="setup-container">
+                    <h2>Identificação</h2>
+                    <span class="setup-label">Selecione seu grupo ou modo de uso:</span>
+                    <select id="research-group" class="setup-select">
+                        <option value="" disabled selected>Escolha uma opção</option>
+                        <option value="Uso Individual">Uso Individual</option>
+                        <hr>
+                        <option value="Grupo 1">Grupo 1</option>
+                        <option value="Grupo 2">Grupo 2</option>
+                        <option value="Grupo 3">Grupo 3</option>
+                        <option value="Grupo 4">Grupo 4</option>
+                        <option value="Grupo 5">Grupo 5</option>
+                        <option value="Grupo 6">Grupo 6</option>
+                        <option value="Grupo 7">Grupo 7</option>
+                        <option value="Grupo 8">Grupo 8</option>
+                    </select>
+                    <span class="setup-label">Frente de discussão:</span>
+                    <select id="research-topic" class="setup-select">
+                        <option value="" disabled selected>Selecione o Tema</option>
+                        <option value="Geral">Uso Geral</option>
+                        <option value="Terapia Mediada por IA">Terapia Mediada por IA</option>
+                        <option value="Produção de Código Mediada por IA">Produção de Código Mediada por IA</option>
+                        <option value="Companheiros Artificiais">Companheiros Artificiais</option>
+                        <option value="IA e Justiça Algorítmica">IA e Justiça Algorítmica</option>
+                    </select>
+                    <div id="error-message" class="error-message"></div>
+                    <button type="button" class="btn-start-research" onclick="window.handleStartResearch()">
+                        INICIAR
+                    </button>
+                </div>
+            </div>
+            <div class="branding-panel">
+                <div class="brand-main-content">
+                    <div class="led-ring"></div>
+                    <h1 class="cyborg-title">CYBORG AI</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-chat" class="hidden-view">
+        <div class="cyborg-chat-wrapper">
+            <div id="side-panel" class="side-panel">
+                <div class="side-panel-header">
+                    <span>Menu</span>
+                    <button id="sidebar-close-button" title="Fechar Menu" onclick="toggleSidebar()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="side-panel-body">
+                    <button class="menu-item" onclick="openModal('modal-instrucoes')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        <span>Instruções</span>
+                    </button>
+                    <button class="menu-item" onclick="novaConversa()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        <span>Nova Conversa</span>
+                    </button>
+                    <button class="menu-item" onclick="abrirHistorico()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12z"/></svg>
+                        <span>Histórico</span>
+                    </button>
+                    <button class="menu-item" id="sidebar-theme-switcher" onclick="alternarTemaGlobal()">
+                        <div style="width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;">
+                            <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.02 21.49 7.74 22 9.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
+                            <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06z"/></svg>
+                        </div>
+                        <span>Alternar Tema</span>
+                    </button>
+                    <button class="menu-item" id="logout-button" onclick="handleLogout()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+
+            <main class="cyborg-chat-container">
+                <header class="chat-header">
+                    <div class="header-left">
+                        <button type="button" id="sidebar-toggle-button" title="Abrir Menu" onclick="toggleSidebar()">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+                        </button>
+                        <div class="brand-container" style="margin-left: 15px;">
+                            <div class="header-halo"></div> <span class="cyborg-brand">Cyborg AI</span>
+                        </div>
+                    </div>
+                    <div class="header-right" style="width: 40px;"></div>
+                </header>
+                
+                <div class="chat-history" id="chat-history"></div>
+
+                <form class="input-area" id="chat-form" onsubmit="handleChatSubmit(event)">
+                    <div class="input-wrapper">
+                        <textarea id="user-input" placeholder="Converse com o Cyborg AI..." rows="1"></textarea>
+                        <button type="button" id="expand-button" title="Expandir/Recolher" onclick="toggleInputSize()">
+                            <svg id="icon-expand" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zM9 21l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zM21 15l-2.3 2.3-2.87-2.89-1.42 1.42L17.3 18.7 15 21h6z"/></svg>
+                        </button>
+                    </div>
+                    <button type="submit" id="send-button" title="Enviar">
+                        <span id="send-button-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </span>
+                    </button>
+                </form>
+            </main>
+
+            <div id="modal-instrucoes" class="modal-overlay">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <span class="modal-title">Instruções de Uso</span>
+                        <button class="close-modal" onclick="closeModal('modal-instrucoes')">&times;</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="slide active" id="slide-1">
+                            <h3>1. Quem sou eu?</h3>
+                            <p>Olá, eu sou o Cyborg AI.</p>
+                            <p>Não sou um assistente virtual focado em produtividade. Fui criado para explorar as fronteiras entre humanos, animais e máquinas, inspirado pela filosofia ciborgue e pelo Design Especulativo.</p>
+                        </div>
+                        <div class="slide" id="slide-2">
+                            <h3>2. Quando me usar?</h3>
+                            <p>Use-me quando quiser testar os limites de uma ideia. Se você está pensando em uma nova tecnologia, um projeto, ou simplesmente refletindo sobre os impactos do futuro na sociedade, este é o lugar.</p>
+                        </div>
+                        <div class="slide" id="slide-3">
+                            <h3>3. Como falar comigo?</h3>
+                            <p>Para que eu possa te ajudar, preciso de contexto. No chat, envie um texto contendo:</p>
+                            <ul>
+                                <li><strong>A ideia:</strong> Qual é a tecnologia, projeto ou problema que você quer discutir?</li>
+                                <li><strong>A intenção:</strong> O que você espera que isso mude no mundo?</li>
+                            </ul>
+                        </div>
+                        <div class="slide" id="slide-4">
+                            <h3>4. Como eu respondo?</h3>
+                            <p>Não espere respostas prontas, resumos ou soluções fáceis. Minhas falas serão concisas, diretas e, muitas vezes, provocarão desconforto.</p>
+                            <p>Meu papel é tensionar a sua visão de mundo.</p>
+                        </div>
+                        <div class="slide" id="slide-5">
+                            <h3>5. O que fazer com a resposta?</h3>
+                            <p>Toda interação comigo terminará com uma pergunta. Use essa pergunta para investigar os pontos cegos éticos e sociais das suas próprias ideias.</p> 
+                            <p>A reflexão final nunca é minha, é sempre sua.</p>
+                        </div>
+                        <div class="carousel-controls">
+                            <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>&lt; Anterior</button>
+                            <span id="slide-indicator" style="font-size:0.9em; align-self:center;">1 / 5</span>
+                            <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">Próximo &gt;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modal-historico" class="modal-overlay">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <span class="modal-title">Histórico de Conversas</span>
+                        <button class="close-modal" onclick="closeModal('modal-historico')">&times;</button>
+                    </div>
+                    <div class="modal-content">
+                        <input type="text" id="history-search" class="history-search" placeholder="Buscar conversa..." oninput="filtrarHistorico()">
+                        <div id="history-list" class="history-list-container">
+                            <div style="text-align:center; color: #666; margin-top: 20px;">Carregando...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/config.js" type="module"></script>
+    <script src="js/db.js" type="module"></script>
+    <script src="js/cyborg.js" type="module"></script>
+    <script src="js/app.js" type="module"></script>
+
+</body>
+</html>
