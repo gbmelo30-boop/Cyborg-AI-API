@@ -51,147 +51,144 @@
         }
         iniciarSistema();
 
-        // ==============================================================================
-        // BLOCO 2
-        // ==============================================================================
+// ==============================================================================
+// BLOCO 2
+// ==============================================================================
 
-        const DB = {
-            user: null,
-            isGuest: false,
+const DB = {
+    user: null,
+    isGuest: false,
 
-            init: async () => {
-                const _supabase = supabase.createClient(
-                    "https://mrjjbrrypieviykakmby.supabase.co",
-                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yampicnJ5cGlldml5a2FrbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MTU4OTIsImV4cCI6MjA4NTI5MTg5Mn0.mldEk-7-vU0BdwlNf5COG_Dj9sRnFWrpQMkqTAZNw_8"
-                );
-                window.supabaseClient = _supabase;
+    init: async () => {
+        const _supabase = supabase.createClient(
+            "https://mrjjbrrypieviykakmby.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yampicnJ5cGlldml5a2FrbWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MTU4OTIsImV4cCI6MjA4NTI5MTg5Mn0.mldEk-7-vU0BdwlNf5COG_Dj9sRnFWrpQMkqTAZNw_8"
+        );
+        window.supabaseClient = _supabase;
 
-                const { data } = await _supabase.auth.getSession();
-                if (data.session) {
-                    DB.user = data.session.user;
-                    DB.isGuest = false;
-                    window.systemLog(`Usuário reconectado: ${DB.user.email}`);
-                    return true;
-                }
-                return false;
-            },
+        const { data } = await _supabase.auth.getSession();
+        if (data.session) {
+            DB.user = data.session.user;
+            DB.isGuest = false;
+            window.systemLog(`Usuário reconectado: ${DB.user.email}`);
+            return true;
+        }
+        return false;
+    },
 
-            login: async (email, password) => {
-                try {
-                    const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    DB.user = data.user;
-                    DB.isGuest = false;
-                    window.systemLog(`Login realizado: ${email}`);
-                    return { success: true };
-                } catch (e) {
-                    window.systemLog(`Erro no Login: ${e.message}`, "ERRO");
-                    return { success: false, error: e.message };
-                }
-            },
+    login: async (email, password) => {
+        try {
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            DB.user = data.user;
+            DB.isGuest = false;
+            return { success: true };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
+    },
 
-            signup: async (email, password) => {
-                try {
-                    const { data, error } = await window.supabaseClient.auth.signUp({ email, password });
-                    if (error) throw error;
-                    window.systemLog(`Conta criada: ${email}`);
-                    return { success: true, msg: "Conta criada! Faça login." };
-                } catch (e) {
-                    window.systemLog(`Erro no Cadastro: ${e.message}`, "ERRO");
-                    return { success: false, error: e.message };
-                }
-            },
+    signup: async (email, password) => {
+        try {
+            const { data, error } = await window.supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
+            return { success: true, msg: "Conta criada!" };
+        } catch (e) {
+            return { success: false, error: e.message };
+        }
+    },
 
-
-            entrarComoConvidado: async () => {
-                DB.user = {
-                    id: crypto.randomUUID(),
-                    email: 'anonimo@pesquisa.guest'
-                };
-                DB.isGuest = true;
-                window.systemLog("Entrou como Convidado.");
-                return { success: true };
-            },
-
-            logout: async () => { /* Função movida para script global UI */ },
-
-            criarSessao: async (primeiraMensagem) => {
-                if (!DB.user) return null;
-                const titulo = primeiraMensagem.length > 30 ? primeiraMensagem.substring(0, 30) + "..." : primeiraMensagem;
-
-                const { data, error } = await window.supabaseClient
-                    .from('chat_sessions')
-                    .insert([{ user_id: DB.user.id, title: titulo }])
-                    .select()
-                    .single();
-
-                if (error) { window.systemLog("Erro criarSessao: " + error.message, "ERRO"); return null; }
-                return data;
-            },
-
-            salvarMensagem: async (sessionId, role, content) => {
-                const { error } = await window.supabaseClient
-                    .from('chat_messages')
-                    .insert([{ session_id: sessionId, role: role, content: content }]);
-                if (error) window.systemLog(`Erro salvarMensagem: ${error.message}`, "ERRO");
-            },
-
-            carregarHistorico: async (sessionId) => {
-
-                const { data, error } = await window.supabaseClient
-                    .from('chat_messages')
-                    .select('role, content')
-                    .eq('session_id', sessionId)
-                    .order('created_at', { ascending: true });
-                if (error) return [];
-                return data;
-            },
-
-            listarSessoes: async () => {
-
-                if (DB.isGuest) {
-                    return [];
-                }
-
-                if (!DB.user) return [];
-                const { data, error } = await window.supabaseClient
-                    .from('chat_sessions')
-                    .select('*')
-                    .eq('user_id', DB.user.id)
-                    .order('is_pinned', { ascending: false })
-                    .order('created_at', { ascending: false });
-
-                if (error) { window.systemLog("Erro listarSessoes: " + error.message, "ERRO"); return []; }
-                return data;
-            },
-
-            deletarSessao: async (sessionId) => {
-                const { error } = await window.supabaseClient
-                    .from('chat_sessions')
-                    .delete()
-                    .eq('id', sessionId);
-                if (error) window.systemLog("Erro deletarSessao: " + error.message, "ERRO");
-            },
-
-            renomearSessao: async (sessionId, novoTitulo) => {
-                const { error } = await window.supabaseClient
-                    .from('chat_sessions')
-                    .update({ title: novoTitulo })
-                    .eq('id', sessionId);
-                if (error) window.systemLog("Erro renomear: " + error.message, "ERRO");
-            },
-
-            fixarSessao: async (sessionId, statusAtual) => {
-                const { error } = await window.supabaseClient
-                    .from('chat_sessions')
-                    .update({ is_pinned: !statusAtual })
-                    .eq('id', sessionId);
-                if (error) window.systemLog("Erro fixar: " + error.message, "ERRO");
-            }
+    entrarComoConvidado: async () => {
+        DB.user = {
+            id: crypto.randomUUID(),
+            email: 'anonimo@pesquisa.guest'
         };
+        DB.isGuest = true;
+        window.systemLog("Entrou como Convidado.");
+        return { success: true };
+    },
 
-        DB.init();
-        window.DB = DB;
+    logout: async () => { /* Implementado na UI */ },
+
+    criarSessao: async (primeiraMensagem) => {
+        if (!DB.user) return null;
+        const titulo = primeiraMensagem.length > 30 ? primeiraMensagem.substring(0, 30) + "..." : primeiraMensagem;
+
+        const context = JSON.parse(localStorage.getItem('cyborg_current_session')) || {};
+
+        const { data, error } = await window.supabaseClient
+            .from('chat_sessions')
+            .insert([{ 
+                user_id: DB.user.id, 
+                title: titulo,
+                grupo: context.group || 'Individual/Visitante',
+                tema: context.topic || 'Geral'
+            }])
+            .select()
+            .single();
+
+        if (error) { window.systemLog("Erro criarSessao: " + error.message, "ERRO"); return null; }
+        return data;
+    },
+
+    salvarMensagem: async (sessionId, role, content) => {
+        const { error } = await window.supabaseClient
+            .from('chat_messages')
+            .insert([{ session_id: sessionId, role: role, content: content }]);
+        if (error) window.systemLog(`Erro salvarMensagem: ${error.message}`, "ERRO");
+    },
+
+    carregarHistorico: async (sessionId) => {
+        const { data, error } = await window.supabaseClient
+            .from('chat_messages')
+            .select('role, content')
+            .eq('session_id', sessionId)
+            .order('created_at', { ascending: true });
+        if (error) return [];
+        return data;
+    },
+
+    listarSessoes: async () => {
+        if (!DB.user) return [];
+        
+        const { data, error } = await window.supabaseClient
+            .from('chat_sessions')
+            .select('*')
+            .eq('user_id', DB.user.id)
+            .order('is_pinned', { ascending: false })
+            .order('created_at', { ascending: false });
+
+        if (error) { window.systemLog("Erro listarSessoes: " + error.message, "ERRO"); return []; }
+        return data;
+    },
+
+    deletarSessao: async (sessionId) => {
+        const { error } = await window.supabaseClient
+            .from('chat_sessions')
+            .delete()
+            .eq('id', sessionId);
+        if (error) window.systemLog("Erro deletarSessao: " + error.message, "ERRO");
+    },
+
+    renomearSessao: async (sessionId, novoTitulo) => {
+        const { error } = await window.supabaseClient
+            .from('chat_sessions')
+            .update({ title: novoTitulo })
+            .eq('id', sessionId);
+        if (error) window.systemLog("Erro renomear: " + error.message, "ERRO");
+    },
+
+    fixarSessao: async (sessionId, statusAtual) => {
+        const { error } = await window.supabaseClient
+            .from('chat_sessions')
+            .update({ is_pinned: !statusAtual })
+            .eq('id', sessionId);
+        if (error) window.systemLog("Erro fixar: " + error.message, "ERRO");
+    }
+};
+
+DB.init();
+window.DB = DB;
 
         // ==============================================================================
         // BLOCO 3
@@ -537,12 +534,10 @@
 
 <style>
     /* ============================================================================== */
-    /* BLOCO 4.2: Frontend (Tela de login)                                           */
+    /* BLOCO 4.2: Frontend (Tela de Identificação)                                   */
     /* ============================================================================== */
 
-    /* VARIAVEIS ESPECÍFICAS DO LOGIN */
     #view-auth {
-        /* Tema Escuro Default */
         --panel-left-bg-dark: #0d1117;
         --panel-right-bg-dark: #161b22;
         --primary-text-dark: #e6edf3;
@@ -550,14 +545,12 @@
         --input-border-dark: #30363d;
         --border-color-dark: #30363d;
         --icon-fill-dark: #7d8590;
-        /* Cores */
         --button-gradient: linear-gradient(to right, #89CFF0, #0052D4);
         --button-text-color: #ffffff;
         --led-blue: #7DF9FF;
         --led-blue-light: #0084ff;
     }
 
-    /* Tema Claro */
     body.light-theme #view-auth {
         --panel-left-bg-dark: #ffffff;
         --panel-right-bg-dark: #f6f8fa;
@@ -568,7 +561,6 @@
         --icon-fill-dark: #57606a;
     }
 
-    /* Container Principal */
     #view-auth {
         background: var(--panel-left-bg-dark);
         display: flex;
@@ -580,11 +572,9 @@
         top: 0; left: 0;
         z-index: 100 !important;
         pointer-events: auto;
-
         transition: background 0.3s, opacity 0.5s ease;
     }
 
-    /* Controles Superiores */
     .top-right-controls { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; gap: 12px; z-index: 30; }
 
     .control-btn {
@@ -597,181 +587,179 @@
     .control-btn svg { width: 18px; height: 18px; fill: var(--icon-fill-dark); transition: fill 0.3s; }
     .control-btn:hover svg { fill: var(--primary-text-dark); }
 
-    /* Estrutura do Card */
     .login-card { display: flex; width: 850px; height: 550px; border-radius: 15px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 25; }
 
     .login-form-panel, .branding-panel { flex-basis: 50%; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: background-color 0.3s; }
     .login-form-panel { background-color: var(--panel-left-bg-dark); padding: 60px; }
     .branding-panel { background-color: var(--panel-right-bg-dark); align-items: center; }
 
-    /* Tipografia e Inputs */
-    #view-auth h2 { color: var(--primary-text-dark); font-size: 2em; font-weight: 600; margin: 0 0 40px 0; font-family: 'Poppins', sans-serif; }
+    #view-auth h2 { color: var(--primary-text-dark); font-size: 1.8em; font-weight: 600; margin: 0 0 30px 0; font-family: 'Poppins', sans-serif; }
 
-    #view-auth input {
-        color: var(--primary-text-dark); width: 100%; border: none;
-        border-bottom: 2px solid var(--input-border-dark);
-        padding: 10px 0; margin-bottom: 20px; font-size: 1em;
-        font-family: 'Poppins', sans-serif; background: transparent;
-        outline: none; transition: border-color 0.3s;
+    .setup-label {
+        display: block;
+        color: var(--secondary-text-dark);
+        font-size: 0.85em;
+        margin-bottom: 8px;
+        font-family: sans-serif;
+        text-align: left;
     }
-    #view-auth input::placeholder { color: var(--secondary-text-dark); }
-    #view-auth input:focus { border-bottom-color: #2575fc; }
 
-    /* Botões */
-    #view-auth button[type="submit"] {
-        width: 100%; padding: 14px; background: var(--button-gradient);
-        border: none; border-radius: 8px; color: var(--button-text-color);
-        font-size: 1.1em; font-weight: 600; cursor: pointer; margin-top: 20px;
-        transition: filter 0.3s, box-shadow 0.3s; box-shadow: 0 0 15px rgba(137, 207, 240, 0.4);
+    .setup-select {
+        width: 100%;
+        background: var(--panel-right-bg-dark);
+        color: var(--primary-text-dark);
+        border: 1px solid var(--input-border-dark);
+        padding: 12px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1em;
+        margin-bottom: 20px;
+        outline: none;
+        transition: border-color 0.3s;
+        cursor: pointer;
     }
-    #view-auth button[type="submit"]:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(137, 207, 240, 0.7); }
+    .setup-select:focus { border-color: var(--led-blue-light); }
 
-    .toggle-form { color: var(--secondary-text-dark); text-align: center; margin-top: 30px; font-size: 0.9em; cursor: pointer; transition: color 0.3s; font-family: 'Poppins', sans-serif;}
-    .toggle-form:hover { color: var(--primary-text-dark); }
-
-    /* Branding Lado Direito */
-    .brand-main-content { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: auto; padding-top: 50px; }
-    .cyborg-title { color: var(--primary-text-dark); font-family: 'Share Tech Mono', monospace; font-size: 2.2em; letter-spacing: 4px; text-align: center; }
+    .btn-start-research {
+        width: 100%;
+        padding: 16px;
+        background: var(--button-gradient);
+        border: none;
+        border-radius: 8px;
+        color: var(--button-text-color);
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: filter 0.3s, box-shadow 0.3s;
+        box-shadow: 0 0 15px rgba(137, 207, 240, 0.4);
+        font-family: 'Share Tech Mono', monospace;
+        letter-spacing: 1px;
+    }
+    .btn-start-research:hover { filter: brightness(1.2); box-shadow: 0 0 25px rgba(137, 207, 240, 0.7); }
 
     .error-message { color: #d93025; text-align: center; margin-top: 15px; display: none; font-size: 0.9em; font-family: sans-serif; }
 
-    /* Responsividade */
+    .brand-main-content { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: auto; padding-top: 50px; }
+    .cyborg-title { color: var(--primary-text-dark); font-family: 'Share Tech Mono', monospace; font-size: 2.2em; letter-spacing: 4px; text-align: center; }
+
     @media (max-width: 880px) {
         .login-card { flex-direction: column; width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
         .branding-panel { display: none; }
         .login-form-panel { flex-basis: 100%; justify-content: center; padding: 40px; }
     }
-
-    /* Guest Button */
-    .guest-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--input-border-dark); text-align: center; width: 100%; }
-    .btn-guest { background: transparent; border: 2px solid var(--led-blue); color: var(--led-blue); margin-top: 10px; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace; }
-    .btn-guest:hover { background: var(--led-blue); color: #000; box-shadow: 0 0 20px var(--led-blue); }
-    .guest-hint { font-size: 0.85em; color: var(--secondary-text-dark); margin-bottom: 8px; display: block; font-family: sans-serif; }
-
 </style>
 
 <section id="view-auth" class="hidden-view">
-
-        <div class="top-right-controls">
-            <div class="control-btn" id="back-button" title="Voltar" onclick="voltarParaIntro()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </div>
-
-            <div class="control-btn" id="auth-theme-switcher" title="Alterar Tema" onclick="alternarTemaGlobal()">
-                <div style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
-                    <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06z"/></svg>
-                    <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.02 21.49 7.74 22 9.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
-                </div>
+    <div class="top-right-controls">
+        <div class="control-btn" id="back-button" title="Voltar" onclick="voltarParaIntro()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </div>
+        <div class="control-btn" id="auth-theme-switcher" title="Alterar Tema" onclick="alternarTemaGlobal()">
+            <div style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06z"/></svg>
+                <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.02 21.49 7.74 22 9.5 22c5.52 0 10-4.48 10-10S15.02 2 9.5 2z"/></svg>
             </div>
         </div>
+    </div>
 
-        <div class="login-card">
-            <div class="login-form-panel">
+    <div class="login-card">
+        <div class="login-form-panel">
+            <div id="setup-container">
+                <h2>Identificação</h2>
+                
+                <span class="setup-label">Selecione seu grupo ou tipo de uso:</span>
+                <select id="research-group" class="setup-select">
+                    <option value="" disabled selected>Escolha uma opção</option>
+                    <option value="Uso Individual">Uso Individual</option>
+                    <hr>
+                    <option value="Grupo 1">Grupo 1 (Pesquisa)</option>
+                    <option value="Grupo 2">Grupo 2 (Pesquisa)</option>
+                    <option value="Grupo 3">Grupo 3 (Pesquisa)</option>
+                    <option value="Grupo 4">Grupo 4 (Pesquisa)</option>
+                    <option value="Grupo 5">Grupo 5 (Pesquisa)</option>
+                    <option value="Grupo 6">Grupo 6 (Pesquisa)</option>
+                    <option value="Grupo 7">Grupo 7 (Pesquisa)</option>
+                    <option value="Grupo 8">Grupo 8 (Pesquisa)</option>
+                </select>
 
-                <div id="login-container">
-                    <h2>Faça seu login</h2>
-                    <form id="form-login" onsubmit="window.handleLogin(event)">
-                        <input type="email" id="login-email" placeholder="E-mail" required>
-                        <input type="password" id="login-password" placeholder="Senha" required>
-                        <button type="submit">Login</button>
-                    </form>
-                    <p class="toggle-form" onclick="toggleAuthMode()">Ainda não tem uma conta? Crie uma</p>
-                </div>
-
-                <div id="signup-container" style="display: none;">
-                    <h2>Criar Conta</h2>
-                    <form id="form-signup" onsubmit="window.handleSignup(event)">
-                        <input type="email" id="signup-email" placeholder="E-mail" required>
-                        <input type="password" id="signup-password" placeholder="Senha (mínimo 6 caracteres)" minlength="6" required>
-                        <button type="submit">Cadastrar</button>
-                    </form>
-                    <p class="toggle-form" onclick="toggleAuthMode()">Já tem uma conta? Faça login</p>
-                </div>
+                <span class="setup-label">Frente de discussão:</span>
+                <select id="research-topic" class="setup-select">
+                    <option value="" disabled selected>Selecione o Tema</option>
+                    <option value="Terapia Mediada por IA">Terapia Mediada por IA</option>
+                    <option value="Produção de Código Mediada por IA">Produção de Código Mediada por IA</option>
+                    <option value="Companheiros Artificiais">Companheiros Artificiais</option>
+                    <option value="IA e Justiça Algorítmica">IA e Justiça Algorítmica</option>
+                    <option value="Geral">Uso Geral</option>
+                </select>
 
                 <div id="error-message" class="error-message"></div>
 
-                <div class="guest-section">
-                    <span class="guest-hint">Deseja entrar sem um login?</span>
-                    <button type="button" class="btn-guest" onclick="window.handleGuestLogin()">
-                        Entrar como convidado
-                    </button>
-                </div>
-            </div>
-
-            <div class="branding-panel">
-                <div class="brand-main-content">
-                    <div class="led-ring"></div>
-                    <h1 class="cyborg-title">CYBORG AI</h1>
-                </div>
+                <button type="button" class="btn-start-research" onclick="window.handleStartResearch()">
+                    INICIAR
+                </button>
             </div>
         </div>
-    </section>
+
+        <div class="branding-panel">
+            <div class="brand-main-content">
+                <div class="led-ring"></div>
+                <h1 class="cyborg-title">CYBORG AI</h1>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
-    // FUNÇÕES DE FORMULÁRIO (LOGIN/CADASTRO)
-
-    function toggleAuthMode() {
-        const loginCont = document.getElementById('login-container');
-        const signupCont = document.getElementById('signup-container');
-        const errorMsg = document.getElementById('error-message');
-
-        errorMsg.style.display = 'none';
-
-        if (loginCont.style.display === 'none') {
-            loginCont.style.display = 'block';
-            signupCont.style.display = 'none';
-        } else {
-            loginCont.style.display = 'none';
-            signupCont.style.display = 'block';
-        }
-    }
-
-    async function handleLogin(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const pass = document.getElementById('login-password').value;
+    window.handleStartResearch = async () => {
+        const group = document.getElementById('research-group').value;
+        const topic = document.getElementById('research-topic').value;
         const errorDiv = document.getElementById('error-message');
 
-        window.systemLog(`Tentativa de login: ${email}`);
-
-        const res = await DB.login(email, pass);
-
-        if (res.success) {
-            window.irParaChat();
-        } else {
-            errorDiv.innerText = "Erro: " + res.error;
+        if (!group || !topic) {
+            errorDiv.innerText = "Selecione o grupo/uso e o tema antes de continuar.";
             errorDiv.style.display = 'block';
+            return;
         }
-    }
 
-    async function handleSignup(e) {
-        e.preventDefault();
-        const email = document.getElementById('signup-email').value;
-        const pass = document.getElementById('signup-password').value;
-        const errorDiv = document.getElementById('error-message');
+        errorDiv.style.display = 'none';
+        const btn = document.querySelector('.btn-start-research');
+        btn.innerText = "CONFIGURANDO...";
 
-        const res = await DB.signup(email, pass);
+        try {
+            
+            let sessionData = JSON.parse(localStorage.getItem('cyborg_current_session'));
+            
+            if (!sessionData || sessionData.group !== group || sessionData.topic !== topic) {
+                const anonymousId = crypto.randomUUID();
+                const anonEmail = `anonimo_${group.replace(/\s+/g, '')}@pesquisa.ic`;
 
-        if (res.success) {
-            alert(res.msg);
-            toggleAuthMode();
-        } else {
-            errorDiv.innerText = "Erro: " + res.error;
+                sessionData = {
+                    userId: anonymousId,
+                    group: group,
+                    topic: topic,
+                    email: anonEmail
+                };
+                localStorage.setItem('cyborg_current_session', JSON.stringify(sessionData));
+            }
+
+            if (typeof DB !== 'undefined') {
+                DB.user = { id: sessionData.userId, email: sessionData.email };
+                DB.isGuest = true;
+                window.currentResearchContext = { group: sessionData.group, topic: sessionData.topic };
+            }
+
+            window.systemLog(`Sessão Iniciada: ${sessionData.group} | ${sessionData.topic}`);
+            
+            if (window.irParaChat) window.irParaChat();
+
+        } catch (e) {
+            errorDiv.innerText = "Erro ao inicializar: " + e.message;
             errorDiv.style.display = 'block';
+        } finally {
+            btn.innerText = "INICIAR";
         }
-    }
-
-    window.handleGuestLogin = async () => {
-        const btn = document.querySelector('.btn-guest');
-        if(btn) btn.innerText = "Acessando...";
-
-        await DB.entrarComoConvidado();
-
-        window.irParaChat();
-
-        if(btn) btn.innerText = "Entrar como convidado";
-    }
-
+    };
 </script>
 
 <style>
