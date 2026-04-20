@@ -1,10 +1,11 @@
 // ==============================================================================
-// LÓGICA DE INTERFACE E EVENTOS
+// LÓGICA DE INTERFACE, ANIMAÇÕES E EVENTOS (UI)
 // ==============================================================================
 const BOT_NAME = 'Cyborg AI';
 let currentSessionId = null;
 let isProcessing = false;
 
+// --- CARROSSEL E MODAIS ---
 let slideIndex = 1;
 window.changeSlide = function(n) { showSlides(slideIndex += n); };
 window.currentSlide = function(n) { showSlides(slideIndex = n); };
@@ -38,6 +39,7 @@ window.openModal = (id) => {
 };
 window.closeModal = (id) => { document.getElementById(id).classList.remove('active'); };
 
+// --- NAVEGAÇÃO DE TELAS ---
 window.switchView = function(viewIdToShow) {
     const views = ['view-intro', 'view-auth', 'view-chat'];
     views.forEach(id => {
@@ -62,6 +64,7 @@ window.irParaChat = function() {
     }
 };
 
+// --- LÓGICA DE IDENTIFICAÇÃO PARA PESQUISA ---
 window.handleStartResearch = async () => {
     const group = document.getElementById('research-group').value;
     const topic = document.getElementById('research-topic').value;
@@ -110,6 +113,7 @@ window.handleStartResearch = async () => {
     }
 };
 
+// --- LOGOUT E HISTÓRICO ---
 window.handleLogout = async () => {
     if(typeof DB !== 'undefined' && DB.logout) {
         if(window.supabaseClient) await window.supabaseClient.auth.signOut();
@@ -191,6 +195,7 @@ window.deletarSessao = async (id) => {
     if(confirm("Excluir conversa?")) { await DB.deletarSessao(id); if(currentSessionId === id) novaConversa(); carregarListaSessoes(); }
 };
 
+// --- INTERFACE DO CHAT ---
 window.toggleSidebar = () => { document.getElementById('side-panel').classList.toggle('is-open'); };
 window.toggleInputSize = () => {
     const form = document.getElementById('chat-form');
@@ -306,6 +311,9 @@ window.handleChatSubmit = async (e) => {
     }
 };
 
+// ==============================================================================
+// EVENT LISTENERS GERAIS (Animação de Loading e Tema)
+// ==============================================================================
 $(document).ready(function() {
     const themeSwitcher = document.getElementById('theme-switcher');
     const body = document.body;
