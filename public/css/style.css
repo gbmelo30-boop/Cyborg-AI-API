@@ -587,22 +587,16 @@ body.light-theme #view-chat {
 }
 .side-panel-body { padding: 20px; overflow-y: auto; }
 
-.menu-item {
-    width: 100%; background: transparent; border: none;
-    color: var(--primary-text-color); padding: 15px;
-    text-align: left; cursor: pointer;
-    display: flex; align-items: center; gap: 15px;
-    border-radius: 8px; margin-bottom: 5px;
-    font-family: inherit; font-size: 1rem;
-}
-.menu-item:hover { background-color: var(--component-hover-bg); }
-.menu-item svg { 
-    width: 24px; 
-    height: 24px; 
-    min-width: 24px;
-    flex-shrink: 0;
-    fill: currentColor; 
-}
+    .menu-item {
+        width: 100%; background: transparent; border: none;
+        color: var(--primary-text-color); padding: 15px;
+        text-align: left; cursor: pointer;
+        display: flex; align-items: center; gap: 15px;
+        border-radius: 8px; margin-bottom: 5px;
+        font-family: inherit; font-size: 1rem;
+    }
+    .menu-item:hover { background-color: var(--component-hover-bg); }
+    .menu-item svg { width: 24px; height: 24px; fill: currentColor; }
 
 #sidebar-close-button { background: transparent; border: none; color: var(--icon-fill); cursor: pointer; }
 
