@@ -596,7 +596,13 @@ body.light-theme #view-chat {
     font-family: inherit; font-size: 1rem;
 }
 .menu-item:hover { background-color: var(--component-hover-bg); }
-.menu-item svg { width: 24px; height: 24px; fill: currentColor; }
+.menu-item svg { 
+    width: 24px; 
+    height: 24px; 
+    min-width: 24px;
+    flex-shrink: 0;
+    fill: currentColor; 
+}
 
 #sidebar-close-button { background: transparent; border: none; color: var(--icon-fill); cursor: pointer; }
 
