@@ -96,6 +96,7 @@ const DB = {
             .from('chat_sessions')
             .select('*')
             .eq('user_id', DB.user.id)
+            .eq('oculta_para_usuario', false) // <-- Filtro adicionado: só traz as não ocultas
             .order('is_pinned', { ascending: false })
             .order('created_at', { ascending: false });
 
@@ -104,7 +105,11 @@ const DB = {
     },
 
     deletarSessao: async (sessionId) => {
-        const { error } = await window.supabaseClient.from('chat_sessions').delete().eq('id', sessionId);
+        // Substituído o .delete() pelo .update() para realizar o Soft Delete
+        const { error } = await window.supabaseClient
+            .from('chat_sessions')
+            .update({ oculta_para_usuario: true }) 
+            .eq('id', sessionId);
         if (error) window.systemLog("Erro deletarSessao: " + error.message, "ERRO");
     },
 
