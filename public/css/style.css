@@ -440,9 +440,16 @@ body.light-theme #view-chat {
 }
 
 .header-halo {
-    width: 12px; height: 12px; border-radius: 50%;
-    border: 2px solid var(--led-static-blue);
-    box-shadow: 0 0 8px var(--led-glow);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 3px var(--led-static-blue)) drop-shadow(0 0 7px var(--led-glow));
+    transition: filter 0.3s;
+}
+
+.header-halo circle {
+    stroke: var(--led-static-blue);
+    transition: stroke 0.4s ease;
 }
 
 .chat-history {
