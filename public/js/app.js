@@ -319,18 +319,25 @@ window.handleChatSubmit = async (e) => {
     if(typeof CYBORG !== 'undefined') {
         const resultado = await CYBORG.enviarMensagem(text, currentSessionId);
 
-        const loaderEl = document.getElementById(loaderId);
-        if(loaderEl) loaderEl.remove();
-
         isProcessing = false;
         sendBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
 
-        if (resultado && resultado.response) {
+        if (resultado && resultado.response && !resultado.error) {
+            // Sucesso: remove o loader e exibe a resposta
+            const loaderEl = document.getElementById(loaderId);
+            if(loaderEl) loaderEl.remove();
             if (resultado.sessionId) currentSessionId = resultado.sessionId;
             const htmlContent = typeof marked !== 'undefined' ? marked.parse(resultado.response) : resultado.response;
             addMessage(BOT_NAME, htmlContent, true);
         } else {
-            addMessage(BOT_NAME, "Erro ao processar mensagem (API Limit).", false);
+            // Erro: LED fica vermelho por 1.5s, depois exibe mensagem
+            const loaderEl = document.getElementById(loaderId);
+            const ledEl    = loaderEl ? loaderEl.querySelector('.led-loader') : null;
+            if (ledEl) ledEl.classList.add('led-loader--error');
+            setTimeout(() => {
+                if(loaderEl) loaderEl.remove();
+                addMessage(BOT_NAME, "Minhas redes neurais sentiram um distúrbio. Tente novamente.", false);
+            }, 1500);
         }
     }
 };
