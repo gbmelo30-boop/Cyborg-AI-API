@@ -338,9 +338,48 @@ body.light-theme #view-auth {
 .cyborg-title { color: var(--primary-text-dark); font-family: 'Share Tech Mono', monospace; font-size: 2.2em; letter-spacing: 4px; text-align: center; }
 
 @media (max-width: 880px) {
-    .login-card { flex-direction: column; width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
-    .branding-panel { display: none; }
-    .login-form-panel { flex-basis: 100%; justify-content: center; padding: 40px; }
+    .login-card {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        overflow-y: auto;
+    }
+
+    .branding-panel {
+        display: flex !important;
+        flex-basis: auto;
+        padding: 28px 30px 12px;
+        background-color: var(--panel-left-bg-dark) !important;
+        justify-content: center;
+        min-height: auto;
+    }
+
+    .brand-main-content {
+        flex-direction: row;
+        padding-top: 0;
+        gap: 15px;
+        margin-bottom: 0;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* LED menor no mobile */
+    .branding-panel .led-ring {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 0;
+    }
+
+    .cyborg-title {
+        font-size: 1.6em;
+    }
+
+    .login-form-panel {
+        flex-basis: auto;
+        padding: 20px 30px 40px;
+    }
 }
 
 /* ============================================================================== */
