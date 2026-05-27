@@ -24,6 +24,7 @@ def chat_endpoint():
         data = request.json
         incoming_messages = data.get('messages', [])
         tema_pesquisa = data.get('tema', 'Geral')
+        user_name = data.get('userName', '').strip()
 
         if not incoming_messages:
             return jsonify({"error": "Nenhuma mensagem enviada."}), 400
