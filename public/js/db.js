@@ -61,10 +61,11 @@ const DB = {
         const { data, error } = await window.supabaseClient
             .from('chat_sessions')
             .insert([{ 
-                user_id: DB.user.id, 
-                title: titulo,
-                grupo: context.group || 'Individual/Visitante',
-                tema: context.topic || 'Geral'
+                user_id:   DB.user.id, 
+                title:     titulo,
+                grupo:     context.group    || 'Individual/Visitante',
+                tema:      context.topic    || 'Geral',
+                user_name: context.userName || null
             }])
             .select()
             .single();
