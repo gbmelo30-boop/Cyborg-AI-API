@@ -80,50 +80,53 @@ function capitalizeName(str) {
 }
 
 window.handleStartResearch = async () => {
-    const group = document.getElementById('research-group').value;
-    const topic = document.getElementById('research-topic').value;
-    const errorDiv = document.getElementById('error-message');
+    const nameInput = document.getElementById('user-name-input');
+    const errorDiv  = document.getElementById('error-message');
+    const rawName   = nameInput ? nameInput.value.trim() : '';
+    const firstName = rawName ? capitalizeName(rawName.split(/\s+/)[0]) : '';
 
-    if (!group || !topic) {
-        errorDiv.innerText = "Selecione o grupo/uso e o tema antes de continuar.";
+    if (!firstName) {
+        errorDiv.innerText = "Digite seu nome para continuar.";
         errorDiv.style.display = 'block';
+        if (nameInput) nameInput.focus();
         return;
     }
 
     errorDiv.style.display = 'none';
     const btn = document.querySelector('.btn-start-research');
-    btn.innerText = "CONFIGURANDO...";
+    btn.innerText = "ENTRANDO...";
 
     try {
-        let sessionData = JSON.parse(localStorage.getItem('cyborg_current_session'));
-        
-        if (!sessionData || sessionData.group !== group || sessionData.topic !== topic) {
-            const anonymousId = crypto.randomUUID();
-            const anonEmail = `anonimo_${group.replace(/\s+/g, '')}@pesquisa.ic`;
+        const anonymousId = crypto.randomUUID();
+        const anonEmail   = `anonimo_${firstName.toLowerCase()}@pesquisa.ic`;
 
-            sessionData = {
-                userId: anonymousId,
-                group: group,
-                topic: topic,
-                email: anonEmail
-            };
-            localStorage.setItem('cyborg_current_session', JSON.stringify(sessionData));
-        }
+        const sessionData = {
+            userId:   anonymousId,
+            userName: firstName,
+            group:    'Individual/Visitante',
+            topic:    'Geral',
+            email:    anonEmail
+        };
+        localStorage.setItem('cyborg_current_session', JSON.stringify(sessionData));
 
         if (typeof DB !== 'undefined') {
-            DB.user = { id: sessionData.userId, email: sessionData.email };
+            DB.user    = { id: sessionData.userId, email: sessionData.email };
             DB.isGuest = true;
-            window.currentResearchContext = { group: sessionData.group, topic: sessionData.topic };
+            window.currentResearchContext = {
+                group:    sessionData.group,
+                topic:    sessionData.topic,
+                userName: sessionData.userName
+            };
         }
 
-        window.systemLog(`Sessão Iniciada: ${sessionData.group} | ${sessionData.topic}`);
+        window.systemLog(`Sessão Iniciada: ${firstName}`);
         if (window.irParaChat) window.irParaChat();
 
     } catch (e) {
         errorDiv.innerText = "Erro ao inicializar: " + e.message;
         errorDiv.style.display = 'block';
     } finally {
-        btn.innerText = "INICIAR";
+        btn.innerText = "ENTRAR";
     }
 };
 
