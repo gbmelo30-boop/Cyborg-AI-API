@@ -253,7 +253,9 @@ window.addMessage = function(author, content, isHtml = false, timestamp = null) 
 
     const metaDiv = document.createElement('div');
     metaDiv.className = 'message-meta';
-    const iconHtml = isBot ? '<div class="header-halo" style="width:12px;height:12px;margin:0;"></div>' : '<div style="width:12px;height:12px;background:#ccc;border-radius:50%;"></div>';
+    const iconHtml = isBot
+        ? `<svg class="header-halo" style="width:16px;height:16px;" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="none" stroke-width="2.2" stroke-dasharray="14.6 2.2" stroke-linecap="round" transform="rotate(-90 10 10)"/></svg>`
+        : `<div style="width:12px;height:12px;background:var(--secondary-text-color);border-radius:50%;opacity:0.7;"></div>`;
     metaDiv.innerHTML = `${iconHtml} <span>${author}</span>`;
 
     const bubbleDiv = document.createElement('div');
