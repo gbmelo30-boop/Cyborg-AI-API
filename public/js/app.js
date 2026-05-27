@@ -60,11 +60,13 @@ window.irParaChat = function() {
     window.switchView('view-chat');
     const historyDiv = document.getElementById('chat-history');
     if(historyDiv && historyDiv.innerHTML.trim() === '') {
-        addMessage(BOT_NAME, "Olá! Sou o Cyborg AI. Como posso ajudar?");
+        const ctx       = JSON.parse(localStorage.getItem('cyborg_current_session') || '{}');
+        const firstName = ctx.userName || '';
+        const greeting  = getGreeting(firstName);
+        addMessage(BOT_NAME, `${greeting} Sou o Cyborg AI. Aqui exploramos as fronteiras entre humano e máquina. Como posso te provocar hoje?`);
     }
 };
 
-// --- HELPERS: saudação dinâmica e normalização de nome ---
 function getGreeting(firstName) {
     const hour = new Date().getHours();
     let period;
