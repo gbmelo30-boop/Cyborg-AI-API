@@ -200,7 +200,10 @@ window.carregarSessao = async (id) => {
 window.novaConversa = () => {
     currentSessionId = null;
     document.getElementById('chat-history').innerHTML = '';
-    addMessage(BOT_NAME, "Olá! Sou o Cyborg AI. Como posso ajudar?");
+    const ctx       = JSON.parse(localStorage.getItem('cyborg_current_session') || '{}');
+    const firstName = ctx.userName || '';
+    const greeting  = getGreeting(firstName);
+    addMessage(BOT_NAME, `${greeting} Sou o Cyborg AI. Aqui exploramos as fronteiras entre humano e máquina. Como posso te provocar hoje?`);
     window.toggleSidebar();
 };
 
