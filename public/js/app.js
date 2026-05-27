@@ -305,12 +305,12 @@ window.handleChatSubmit = async (e) => {
 
     loaderDiv.innerHTML = `
         <div class="message-meta"><span>${BOT_NAME}</span></div>
-        <div class="message-bubble fade-in">
-            <div class="typing-indicator">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
+        <div class="message-bubble fade-in" style="padding:12px 20px; min-width:65px; display:flex; align-items:center; justify-content:center;">
+            <svg class="led-loader" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="16" fill="none" stroke-width="3.5"
+                    stroke-dasharray="30.1 3.4" stroke-linecap="round"
+                    transform="rotate(-90 20 20)"/>
+            </svg>
         </div>
     `;
     historyDiv.appendChild(loaderDiv);
