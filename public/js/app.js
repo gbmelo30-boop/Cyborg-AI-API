@@ -64,7 +64,21 @@ window.irParaChat = function() {
     }
 };
 
-// --- LÓGICA DE IDENTIFICAÇÃO PARA PESQUISA ---
+// --- HELPERS: saudação dinâmica e normalização de nome ---
+function getGreeting(firstName) {
+    const hour = new Date().getHours();
+    let period;
+    if (hour >= 5 && hour < 12)       period = 'Bom dia';
+    else if (hour >= 12 && hour < 18) period = 'Boa tarde';
+    else                               period = 'Boa noite';
+    return firstName ? `${period}, ${firstName}!` : `${period}!`;
+}
+
+function capitalizeName(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 window.handleStartResearch = async () => {
     const group = document.getElementById('research-group').value;
     const topic = document.getElementById('research-topic').value;
