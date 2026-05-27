@@ -35,10 +35,12 @@ const CYBORG = {
                 throw new Error("Link da API não configurado.");
             }
 
+            const userNameAtual = contextData.userName || '';
+
             const response = await fetch(`${API_BASE_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: historyForAI, tema: temaAtual })
+                body: JSON.stringify({ messages: historyForAI, tema: temaAtual, userName: userNameAtual })
             });
 
             if (!response.ok) {
