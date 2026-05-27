@@ -108,13 +108,35 @@ body.light-theme .light-icon { display: none; }
 main { max-width: 600px; width: 100%; display: flex; flex-direction: column; align-items: center; }
 
 .led-ring {
-    width: 90px; height: 90px;
+    width: 90px;
+    height: 90px;
     margin-bottom: 30px;
-    border-radius: 50%;
-    border: 8px solid var(--led-static-blue);
-    transition: border-color 0.3s, box-shadow 0.3s;
-    box-shadow: 0 0 25px var(--led-glow);
-    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px var(--led-static-blue)) drop-shadow(0 0 20px var(--led-glow));
+    transition: filter 0.4s ease;
+}
+
+.led-ring circle {
+    stroke: var(--led-static-blue);
+    transition: stroke 0.4s ease;
+}
+
+/* Estados de cor do LED */
+.led-ring.led-yellow circle { stroke: #FFD700; }
+.led-ring.led-yellow { filter: drop-shadow(0 0 8px #FFD700) drop-shadow(0 0 20px rgba(255,215,0,0.6)); }
+
+.led-ring.led-red circle { stroke: #FF4444; }
+.led-ring.led-red { filter: drop-shadow(0 0 8px #FF4444) drop-shadow(0 0 20px rgba(255,68,68,0.6)); }
+
+/* Animação de pulso (usado no loading) */
+@keyframes ledPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+.led-ring.led-pulsing {
+    animation: ledPulse 1.2s ease-in-out infinite;
+    transform-origin: center;
 }
 
 h1 {
