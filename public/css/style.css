@@ -172,6 +172,12 @@ body.light-theme h1 {
 }
 body.light-theme .p-main { text-shadow: 0 2px 4px rgba(255,255,255,0.9); }
 
+body.light-theme .p-main { text-shadow: 0 2px 4px rgba(255,255,255,0.9); }
+
+@media (max-width: 360px) {
+    .p-main { white-space: normal; max-width: 90%; }
+}
+
 .loader-button-container {
     min-height: 80px;
     width: 100%;
