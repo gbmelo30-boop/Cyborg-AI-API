@@ -902,12 +902,6 @@ body.light-theme #view-chat {
     opacity: 0.6;
 }
 
-/* ocultar UNIRIO text em telas pequenas  */
-@media (max-width: 480px) {
-    .header-unirio-text { display: none; }
-    .header-unirio svg { width: 20px; height: 20px; }
-}
-
 body.light-theme .modal-box .slide h3,
 body.light-theme .modal-box .slide p,
 body.light-theme .modal-box .slide li,
