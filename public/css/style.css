@@ -603,19 +603,19 @@ body.light-theme #view-chat {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: var(--led-static-blue);
-    border: none;
-    color: #000000;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--secondary-text-color);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-    transition: opacity 0.2s, transform 0.15s;
+    transition: background-color 0.2s, color 0.2s;
 }
 #send-button:hover {
-    opacity: 0.85;
-    transform: scale(1.06);
+    background-color: var(--component-hover-bg);
+    color: var(--primary-text-color);
 }
 
 .message-container { display: flex; flex-direction: column; max-width: 85%; }
