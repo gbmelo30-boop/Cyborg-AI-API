@@ -351,40 +351,42 @@ body.light-theme #view-auth {
         border-radius: 0;
         box-shadow: none;
         overflow-y: auto;
+        justify-content: center; 
+        gap: 8px;
     }
-
     .branding-panel {
+        order: -1; 
         display: flex !important;
         flex-basis: auto;
-        padding: 28px 30px 12px;
+        padding: 0 30px 8px;
         background-color: var(--panel-left-bg-dark) !important;
         justify-content: center;
         min-height: auto;
     }
-
     .brand-main-content {
         flex-direction: row;
         padding-top: 0;
-        gap: 15px;
+        gap: 14px;
         margin-bottom: 0;
-        align-items: center;
+        align-items: center; 
         justify-content: center;
     }
-
-    /* LED menor no mobile */
+    
     .branding-panel .led-ring {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         margin-bottom: 0;
+        flex-shrink: 0;
     }
-
     .cyborg-title {
-        font-size: 1.6em;
+        font-size: 1.5em;
+        line-height: 1; 
+        margin: 0;
     }
-
     .login-form-panel {
         flex-basis: auto;
-        padding: 20px 30px 40px;
+        padding: 16px 30px 24px;
+        justify-content: center;
     }
 }
 
