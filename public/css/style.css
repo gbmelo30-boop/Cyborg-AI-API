@@ -516,12 +516,12 @@ body.light-theme #view-chat {
 }
 .input-area.expanded {
     position: absolute;
-    bottom: 16px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
     max-width: 820px;
-    height: 42vh;
+    height: 38vh;
     background: transparent;
     padding: 0;
     z-index: 200;
