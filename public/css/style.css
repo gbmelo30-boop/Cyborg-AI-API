@@ -545,7 +545,9 @@ body.light-theme #view-chat {
 }
 .input-area.expanded .input-pill {
     height: 100%;
-    border-radius: 18px;
+    border-radius: 20px;
+    border-color: var(--led-static-blue);
+    box-shadow: 0 16px 60px rgba(0,0,0,0.8);
     align-items: flex-start;
     padding: 14px;
 }
