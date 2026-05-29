@@ -864,34 +864,8 @@ body.light-theme #view-chat {
 }
 
 .header-right {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 40px;
-}
-
-.header-unirio {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    width: 40px;
     flex-shrink: 0;
-}
-
-.header-unirio svg {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-}
-
-.header-unirio-text {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.82em;
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: #1565C0 !important;
-    text-transform: uppercase;
-    white-space: nowrap;
-    line-height: 1;
 }
 
 .auth-subtitle {
