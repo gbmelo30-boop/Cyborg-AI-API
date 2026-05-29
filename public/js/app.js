@@ -413,9 +413,6 @@ $(document).ready(function() {
 document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     if(userInput) {
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); window.handleChatSubmit(e); }
-        });
         userInput.addEventListener('focus', () => {
             setTimeout(() => {
                 window.scrollTo(0, 0);
