@@ -306,8 +306,8 @@ window.handleChatSubmit = async (e) => {
     if (isProcessing) return;
 
     const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-button');
-    const chatForm = document.getElementById('chat-form');
+    const sendBtn   = document.getElementById('send-button');
+    const chatForm  = document.getElementById('chat-form');
     const historyDiv = document.getElementById('chat-history');
 
     const text = userInput.value.trim();
@@ -319,22 +319,22 @@ window.handleChatSubmit = async (e) => {
     addMessage("Você", text, false);
 
     isProcessing = true;
-    sendBtn.innerHTML = '<span style="font-size:20px; animation:spin 1s infinite">↻</span>';
+    sendBtn.innerHTML = '<span style="font-size:18px; animation:spin 1s linear infinite; display:inline-block;">↻</span>';
 
     const loaderId = 'loader-' + Date.now();
     const loaderDiv = document.createElement('div');
     loaderDiv.id = loaderId;
     loaderDiv.className = 'message-container bot-container';
-
     loaderDiv.innerHTML = `
-        <div class="message-meta"><span>${BOT_NAME}</span></div>
-        <div class="message-bubble fade-in" style="padding:12px 20px; min-width:65px; display:flex; align-items:center; justify-content:center;">
-            <svg class="led-loader" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="16" fill="none" stroke-width="3.5"
-                    stroke-dasharray="30.1 3.4" stroke-linecap="round"
-                    transform="rotate(-90 20 20)"/>
+        <div class="message-meta">
+            <svg class="header-halo led-loading" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="8" fill="none" stroke-width="2.2"
+                    stroke-dasharray="14.6 2.2" stroke-linecap="round"
+                    transform="rotate(-90 10 10)"/>
             </svg>
+            <span>${BOT_NAME}</span>
         </div>
+        <div class="message-bubble fade-in" id="${loaderId}-bubble" style="padding:8px 16px; min-height:10px;"></div>
     `;
     historyDiv.appendChild(loaderDiv);
     historyDiv.scrollTop = historyDiv.scrollHeight;
@@ -343,20 +343,32 @@ window.handleChatSubmit = async (e) => {
         const resultado = await CYBORG.enviarMensagem(text, currentSessionId);
 
         isProcessing = false;
-        sendBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+        sendBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+
+        const loaderEl = document.getElementById(loaderId);
+        const bubbleEl = document.getElementById(`${loaderId}-bubble`);
+        const ledEl    = loaderEl ? loaderEl.querySelector('.led-loading') : null;
 
         if (resultado && resultado.response && !resultado.error) {
-            // Sucesso: remove o loader e exibe a resposta
-            const loaderEl = document.getElementById(loaderId);
-            if(loaderEl) loaderEl.remove();
             if (resultado.sessionId) currentSessionId = resultado.sessionId;
-            const htmlContent = typeof marked !== 'undefined' ? marked.parse(resultado.response) : resultado.response;
-            addMessage(BOT_NAME, htmlContent, true);
+
+            const rawText   = resultado.response;
+            const htmlFinal = typeof marked !== 'undefined' ? marked.parse(rawText) : rawText;
+
+            if (bubbleEl) await typewriterEffect(bubbleEl, rawText);
+
+            if (bubbleEl) {
+                bubbleEl.innerHTML = htmlFinal;
+                const timeDiv = document.createElement('span');
+                timeDiv.className = 'message-time';
+                timeDiv.innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                bubbleEl.appendChild(timeDiv);
+            }
+
+            if (ledEl) ledEl.classList.add('led-done');
+
         } else {
-            // Erro: LED fica vermelho por 1.5s, depois exibe mensagem
-            const loaderEl = document.getElementById(loaderId);
-            const ledEl    = loaderEl ? loaderEl.querySelector('.led-loader') : null;
-            if (ledEl) ledEl.classList.add('led-loader--error');
+            if (ledEl) ledEl.classList.add('led-error');
             setTimeout(() => {
                 if(loaderEl) loaderEl.remove();
                 addMessage(BOT_NAME, "Minhas redes neurais sentiram um distúrbio. Tente novamente.", false);
