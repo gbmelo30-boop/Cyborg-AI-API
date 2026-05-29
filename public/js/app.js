@@ -224,7 +224,7 @@ window.novaConversa = () => {
     const ctx       = JSON.parse(localStorage.getItem('cyborg_current_session') || '{}');
     const firstName = ctx.userName || '';
     const greeting  = getGreeting(firstName);
-    addMessage(BOT_NAME, `${greeting} Sou o Cyborg AI. Aqui exploramos as fronteiras entre humano e máquina. Como posso te provocar hoje?`);
+    addMessage(BOT_NAME, `${greeting} Sou o Cyborg AI, como posso ajudá-lo?`);
     window.toggleSidebar();
 };
 
