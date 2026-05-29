@@ -81,6 +81,27 @@ function capitalizeName(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+async function typewriterEffect(element, text) {
+    const msPerChar = Math.max(3, Math.min(20, 2400 / text.length));
+    return new Promise(resolve => {
+        let i = 0;
+        element.textContent = '';
+        element.classList.add('typing-cursor');
+        const tick = () => {
+            if (i < text.length) {
+                element.textContent += text[i++];
+                const hist = document.getElementById('chat-history');
+                if (hist) hist.scrollTop = hist.scrollHeight;
+                setTimeout(tick, msPerChar);
+            } else {
+                element.classList.remove('typing-cursor');
+                resolve();
+            }
+        };
+        tick();
+    });
+}
+
 window.handleStartResearch = async () => {
     const nameInput = document.getElementById('user-name-input');
     const errorDiv  = document.getElementById('error-message');
