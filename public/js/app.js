@@ -390,7 +390,6 @@ $(document).ready(function() {
             body.classList.add('light-theme');
         }
     };
-
     const toggleTheme = () => {
         body.classList.toggle('light-theme');
         const currentTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
