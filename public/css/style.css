@@ -820,25 +820,47 @@ body.light-theme #view-chat {
     40% { transform: scale(1); opacity: 1; }
 }
 
-.led-loader {
-    width: 40px;
-    height: 40px;
-    display: block;
-    margin: 4px auto;
-    color: #FFD700;
-    filter: drop-shadow(0 0 5px #FFD700) drop-shadow(0 0 12px rgba(255,215,0,0.55));
-    animation: ledPulse 1.2s ease-in-out infinite;
+@keyframes ledSpinPulse {
+    0%   { transform: rotate(0deg)   scale(1);   opacity: 1;    }
+    50%  { transform: rotate(180deg) scale(1.1); opacity: 0.72; }
+    100% { transform: rotate(360deg) scale(1);   opacity: 1;    }
+}
+.led-loading {
     transform-origin: center;
+    animation: ledSpinPulse 1s linear infinite;
+    filter: drop-shadow(0 0 3px #FFD700) drop-shadow(0 0 8px rgba(255,215,0,0.65));
 }
-
-.led-loader circle {
-    stroke: currentColor;
+.led-loading circle {
+    stroke: #FFD700;
 }
-
-.led-loader.led-loader--error {
-    color: #FF4444;
-    filter: drop-shadow(0 0 5px #FF4444) drop-shadow(0 0 12px rgba(255,68,68,0.55));
+.led-loading.led-done {
     animation: none;
+    transform: none;
+    filter: drop-shadow(0 0 3px var(--led-static-blue)) drop-shadow(0 0 7px var(--led-glow));
+    transition: filter 0.6s ease;
+}
+.led-loading.led-done circle {
+    stroke: var(--led-static-blue);
+    transition: stroke 0.6s ease;
+}
+.led-loading.led-error {
+    animation: none;
+    transform: none;
+    filter: drop-shadow(0 0 3px #FF4444) drop-shadow(0 0 7px rgba(255,68,68,0.5));
+}
+.led-loading.led-error circle {
+    stroke: #FF4444;
+}
+.typing-cursor::after {
+    content: '▌';
+    animation: cursorBlink 0.6s step-end infinite;
+    color: var(--led-static-blue);
+    font-size: 0.9em;
+    margin-left: 1px;
+}
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
 }
 
 .header-right {
