@@ -241,16 +241,18 @@ window.deletarSessao = async (id) => {
 // --- INTERFACE DO CHAT ---
 window.toggleSidebar = () => { document.getElementById('side-panel').classList.toggle('is-open'); };
 window.toggleInputSize = () => {
-    const form = document.getElementById('chat-form');
-    const btn = document.getElementById('expand-button');
-    const isExpanded = form.classList.toggle('expanded');
+    const form  = document.getElementById('chat-form');
+    const btn   = document.getElementById('expand-button');
     const input = document.getElementById('user-input');
+    const isExpanded = form.classList.toggle('expanded');
     if (isExpanded) {
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-14v3h3v2h-5V5h2z"/></svg>';
-        input.style.height = '100%';
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-14v3h3v2h-5V5h2z"/></svg>';
+        input.style.minHeight = 'calc(100% - 20px)';
+        input.style.maxHeight = 'none';
     } else {
-        btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zM9 21l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zM21 15l-2.3 2.3-2.87-2.89-1.42 1.42L17.3 18.7 15 21h6z"/></svg>';
-        input.style.height = '54px';
+        btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zM9 21l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zM21 15l-2.3 2.3-2.87-2.89-1.42 1.42L17.3 18.7 15 21h6z"/></svg>';
+        input.style.minHeight = '36px';
+        input.style.maxHeight = '160px';
     }
 };
 
